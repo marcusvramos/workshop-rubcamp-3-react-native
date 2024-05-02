@@ -2,6 +2,9 @@ import React, {useState} from 'react';
 import {Button, FlatList} from 'react-native';
 import {ScreenBase} from '../components/screen-base/screen-base';
 import {Input, ItemText, ListItem} from './todo-list.styles';
+import {useDispatch, useSelector} from 'react-redux';
+import {ReduxState} from '../redux/store';
+import {addTask, removeTask} from '../redux/slices/taskSlice';
 
 export interface Task {
   id: string;
@@ -10,16 +13,16 @@ export interface Task {
 
 const TodoList = () => {
   const [task, setTask] = useState<Task>({id: '', value: ''});
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const tasks = useSelector((state: ReduxState) => state.taskReducer.tasks);
+  const dispatch = useDispatch();
 
   function handleAddTask() {
-    setTasks([...tasks, task]);
+    dispatch(addTask(task));
     setTask({id: '', value: ''});
   }
 
   function handleRemoveTask(taskId: string) {
-    const filteredTasks = tasks.filter(taskItem => taskItem.id !== taskId);
-    setTasks(filteredTasks);
+    dispatch(removeTask(taskId));
   }
 
   function renderTask(taskItem: Task) {
